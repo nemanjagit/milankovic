@@ -43,29 +43,14 @@ frontend/*.local
 **/application-secret*.yml
 
 # ─── IntelliJ IDEA ──────────────────────────────────────────
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/usage.statistics.xml
-.idea/dictionaries/
-.idea/shelf/
-.idea/httpRequests/
-.idea/dataSources/
-.idea/dataSources.local.xml
-.idea/sqlDataSources.xml
-.idea/dynamic.xml
-.idea/uiDesigner.xml
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
-.idea_modules/
 
 # ─── VS Code ────────────────────────────────────────────────
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
+.vscode/
 
 # ─── Claude Code ────────────────────────────────────────────
 .claude/
