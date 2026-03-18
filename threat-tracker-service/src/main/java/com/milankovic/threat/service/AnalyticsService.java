@@ -13,9 +13,13 @@ import java.util.Map;
 public class AnalyticsService {
 
     private final Driver driver;
+    private final MissionSeedService missionSeedService;
+    private final ThreatService threatService;
 
-    public AnalyticsService(Driver driver) {
+    public AnalyticsService(Driver driver, MissionSeedService missionSeedService, ThreatService threatService) {
         this.driver = driver;
+        this.missionSeedService = missionSeedService;
+        this.threatService = threatService;
     }
 
     public List<Map<String, Object>> getAgencies() {
@@ -120,7 +124,21 @@ public class AnalyticsService {
     @EventListener(ApplicationReadyEvent.class)
     public void projectGraph() {
         try (Session session = driver.session()) {
-            // Derive COLLABORATED_WITH: agencies that both targeted the same celestial body
+            // Auto-seed missions if DB is empty
+            long missionCount = session.run("MATCH (m:Mission) RETURN count(m) AS c")
+                    .single().get("c").asLong();
+            if (missionCount == 0) {
+                missionSeedService.seed();
+            }
+
+            // Auto-seed threats if no SmallBody nodes exist
+            long threatCount = session.run("MATCH (s:SmallBody) RETURN count(s) AS c")
+                    .single().get("c").asLong();
+            if (threatCount == 0) {
+                threatService.seedThreats();
+            }
+
+            // Derive COLLABORATED_WITH edges
             session.run("""
                     MATCH (a1:Agency)-[:LAUNCHED]->(:Mission)-[:TARGETED]->(b:CelestialBody)
                           <-[:TARGETED]-(:Mission)<-[:LAUNCHED]-(a2:Agency)
@@ -140,7 +158,7 @@ public class AnalyticsService {
                     """).consume();
 
         } catch (Exception e) {
-            // DB not yet seeded — will succeed after POST /missions/seed
+            // Neo4j not ready yet — GDS queries will retry on first request
         }
     }
 }

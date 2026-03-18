@@ -755,6 +755,18 @@ body::after {
   color: var(--text-dim);
 }
 
+.alerts-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
 .alerts-loading {
   flex: 1;
   display: flex;
@@ -1514,7 +1526,7 @@ body::after {
   font-size: 14px;
   color: var(--text-dim);
 }
-/* .missions-mode-toggle removed — replaced by .missions-top-bar */
+/* .missions-mode-toggle removed - replaced by .missions-top-bar */
 
 .mode-btn {
   font-family: var(--font);
@@ -1580,6 +1592,17 @@ body::after {
   box-shadow: 0 0 5px var(--cat-color, var(--cyan));
 }
 
+.sat-toggle-spinner {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--cat-color, var(--cyan));
+  animation: sat-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes sat-spin { to { transform: rotate(360deg); } }
+
 /* ─── Satellites View ────────────────────────────────────────────── */
 .sat-view {
   display: flex;
@@ -1594,9 +1617,7 @@ body::after {
   position: relative;
   overflow: hidden;
   background: #000408;
-  cursor: grab;
 }
-.sat-canvas:active { cursor: grabbing; }
 
 .sat-canvas canvas {
   display: block;

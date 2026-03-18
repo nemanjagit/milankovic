@@ -39,8 +39,16 @@ public class AlertService {
         this.observerClient = observerClient;
     }
 
+    // Retry every 90 s until we get alerts (threat-tracker may still be seeding on first boot)
+    @Scheduled(fixedDelay = 90_000, initialDelay = 90_000)
+    @Transactional
+    public void startupRetry() {
+        if (alertRepository.count() > 0) return;
+        try { scan(); } catch (Exception e) { /* threat-tracker not ready yet */ }
+    }
+
     // --- Scheduled scan every 6 hours ---
-    @Scheduled(fixedDelay = 6 * 60 * 60 * 1000)
+    @Scheduled(fixedDelay = 6 * 60 * 60 * 1000, initialDelay = 6 * 60 * 60 * 1000)
     @Transactional
     public int runScan() {
         return scan();
@@ -49,7 +57,7 @@ public class AlertService {
     @Transactional
     public int scan() {
         int generated = 0;
-        List<String> planets = List.of("Earth", "Mars", "Venus");
+        List<String> planets = List.of("Earth");
 
         for (String planet : planets) {
             List<Map<String, Object>> threats;

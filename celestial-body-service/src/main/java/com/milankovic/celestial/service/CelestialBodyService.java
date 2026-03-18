@@ -11,6 +11,8 @@ import com.milankovic.celestial.exception.BodyNotFoundException;
 import com.milankovic.celestial.repository.BodyRepository;
 import com.milankovic.celestial.repository.MoonRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -41,6 +43,13 @@ public class CelestialBodyService {
         this.bodyRepository = bodyRepository;
         this.moonRepository = moonRepository;
         this.restTemplate = restTemplate;
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void autoSeed() {
+        if (bodyRepository.count() == 0) {
+            try { seedFromApi(); } catch (Exception e) { /* external API unavailable */ }
+        }
     }
 
     public Page<BodyResponse> getAllBodies(String bodyType, Pageable pageable) {

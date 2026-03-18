@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { getBodyStats, getAlertsDashboard, getMissions } from '../api';
 
 export default function StatsBar() {
-  const [bodies, setBodies]   = useState<number>(515);
-  const [missions, setMissions] = useState<number>(4324);
-  const [alerts, setAlerts]   = useState<number>(992);
+  const [bodies, setBodies]     = useState<number | null>(null);
+  const [missions, setMissions] = useState<number | null>(null);
+  const [alerts, setAlerts]     = useState<number | null>(null);
 
   useEffect(() => {
     getBodyStats()
@@ -20,7 +20,7 @@ export default function StatsBar() {
       .catch(() => {});
   }, []);
 
-  const fmt = (n: number) => n.toLocaleString();
+  const fmt = (n: number | null) => n == null ? '—' : n.toLocaleString();
 
   return (
     <div className="statsbar glass-panel">

@@ -15,7 +15,12 @@ export default defineConfig({
       '/threats':   { target: 'http://localhost:8080', changeOrigin: true },
       '/observers': { target: 'http://localhost:8080', changeOrigin: true },
       '/alerts':    { target: 'http://localhost:8080', changeOrigin: true },
-      '/celestrak': { target: 'https://celestrak.org', changeOrigin: true, rewrite: (path) => path.replace(/^\/celestrak/, '') },
+      '/celestrak': {
+        target: 'https://celestrak.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/celestrak/, ''),
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' },
+      },
     },
   },
 })

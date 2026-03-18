@@ -116,6 +116,11 @@ export default function AlertsView() {
       </div>
 
       {/* Alert table */}
+      {!loading && allAlerts.length === 0 && (
+        <div className="alerts-empty">
+          <span>No alerts in database — scan pending.</span>
+        </div>
+      )}
       {loading ? (
         <div className="alerts-loading">SCANNING THREAT DATABASE...</div>
       ) : (

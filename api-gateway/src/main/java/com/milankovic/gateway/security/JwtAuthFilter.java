@@ -16,7 +16,7 @@ import java.util.List;
 @Component
 public class JwtAuthFilter implements WebFilter {
 
-    private static final List<String> PUBLIC_PATHS = List.of("/auth/login", "/auth/register");
+    private static final List<String> PUBLIC_PATHS = List.of("/auth/login", "/auth/register", "/actuator");
 
     private final JwtUtil jwtUtil;
 
