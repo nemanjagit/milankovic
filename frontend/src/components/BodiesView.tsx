@@ -14,14 +14,14 @@ const TYPE_COLOR: Record<string, string> = {
 function typeColor(t: string) { return TYPE_COLOR[t?.toLowerCase()] ?? '#4a6a82'; }
 
 function fmtMass(kg: number | null | undefined): string {
-  if (kg == null) return '—';
+  if (kg == null) return '-';
   const exp = Math.floor(Math.log10(Math.abs(kg)));
   const man = kg / Math.pow(10, exp);
   return `${man.toFixed(2)}e${exp}`;
 }
 
 function fmt(v: number | null | undefined, d = 2, sfx = ''): string {
-  if (v == null) return '—';
+  if (v == null) return '-';
   return v.toLocaleString(undefined, { maximumFractionDigits: d }) + (sfx ? ' ' + sfx : '');
 }
 
@@ -172,7 +172,7 @@ export default function BodiesView() {
                   ? selected.orbitalData.periodDays > 365
                     ? `${(selected.orbitalData.periodDays / 365.25).toFixed(2)} yr`
                     : `${selected.orbitalData.periodDays.toFixed(1)} d`
-                  : '—'}
+                  : '-'}
               </span>
             </div>
             <div className="tele-row"><span className="tele-key">Semi-Major Axis</span>
@@ -198,7 +198,7 @@ export default function BodiesView() {
               <span className="tele-val" style={{ fontSize: 12 }}>{fmtMass(selected.mass)}</span>
             </div>
             <div className="tele-row"><span className="tele-key">Mean Temp</span>
-              <span className="tele-val amber">{selected.meanTemp != null ? `${selected.meanTemp} K` : '—'}</span>
+              <span className="tele-val amber">{selected.meanTemp != null ? `${selected.meanTemp} K` : '-'}</span>
             </div>
             <div className="tele-row"><span className="tele-key">Gravity</span>
               <span className="tele-val">{fmt(selected.physicalProperties?.gravity, 2, 'm/s²')}</span>
@@ -210,7 +210,7 @@ export default function BodiesView() {
               <span className="tele-val">
                 {selected.physicalProperties?.rotationPeriod != null
                   ? `${Math.abs(selected.physicalProperties.rotationPeriod).toFixed(1)} h`
-                  : '—'}
+                  : '-'}
               </span>
             </div>
             <div className="tele-row"><span className="tele-key">Axial Tilt</span>

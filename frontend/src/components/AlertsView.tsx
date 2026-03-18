@@ -91,14 +91,14 @@ export default function AlertsView() {
               className="adash-value"
               style={{ color: SEV_COLOR[s], textShadow: `0 0 12px ${SEV_COLOR[s]}` }}
             >
-              {dashboard?.openAlertsBySeverity[s] ?? '—'}
+              {dashboard?.openAlertsBySeverity[s] ?? '-'}
             </span>
             <span className="adash-label">{s}</span>
           </div>
         ))}
         <div className="adash-card glass-panel">
           <span className="adash-value" style={{ color: 'var(--cyan)', textShadow: '0 0 12px rgba(0,180,255,0.5)' }}>
-            {dashboard?.alertsLast30Days ?? '—'}
+            {dashboard?.alertsLast30Days ?? '-'}
           </span>
           <span className="adash-label">30-DAY TOTAL</span>
         </div>
@@ -136,15 +136,15 @@ export default function AlertsView() {
               {visible.map((a) => (
                 <tr key={a.id} className={`alert-row alert-row--${a.severity.toLowerCase()}`}>
                   <td><SeverityBadge sev={a.severity} /></td>
-                  <td className="ac-planet">{a.planetName ?? '—'}</td>
-                  <td className="ac-body">{a.bodyId ?? '—'}</td>
-                  <td className="ac-dist">{a.distanceAu?.toFixed(4) ?? '—'}</td>
+                  <td className="ac-planet">{a.planetName ?? '-'}</td>
+                  <td className="ac-body">{a.bodyId ?? '-'}</td>
+                  <td className="ac-dist">{a.distanceAu?.toFixed(4) ?? '-'}</td>
                   <td>
                     <span className={`status-pill status-pill--${(a.status ?? 'OPEN').toLowerCase()}`}>
                       {a.status ?? 'OPEN'}
                     </span>
                   </td>
-                  <td className="ac-time">{a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '—'}</td>
+                  <td className="ac-time">{a.createdAt ? new Date(a.createdAt).toLocaleDateString() : '-'}</td>
                   <td>
                     <button
                       className="escalate-btn"

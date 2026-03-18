@@ -7,13 +7,13 @@ interface Props {
 }
 
 function fmt(v: number | null | undefined, decimals = 2, suffix = ''): string {
-  if (v == null) return '—';
+  if (v == null) return '-';
   const s = v.toLocaleString(undefined, { maximumFractionDigits: decimals });
   return suffix ? `${s} ${suffix}` : s;
 }
 
 function fmtMass(kg: number | null | undefined): string {
-  if (kg == null) return '—';
+  if (kg == null) return '-';
   const exp = Math.floor(Math.log10(Math.abs(kg)));
   const man = kg / Math.pow(10, exp);
   return `${man.toFixed(3)}×10^${exp} kg`;
@@ -27,7 +27,7 @@ function CompBar({ label, value, max, color }: {
     <div className="comp-entry">
       <div className="comp-label-row">
         <span className="comp-label">{label}</span>
-        <span className="comp-pct">{value != null ? fmt(value, 1) : '—'}</span>
+        <span className="comp-pct">{value != null ? fmt(value, 1) : '-'}</span>
       </div>
       <div className="comp-track">
         <div className="comp-fill" style={{ width: `${pct}%`, background: color }} />
@@ -66,7 +66,7 @@ export default function TelemetryPanel({ selectedBody }: Props) {
     <aside className="telemetry">
       {/* Header */}
       <div className="tele-header">
-        <span className="tele-title">Telemetry — Selected Body</span>
+        <span className="tele-title">Telemetry - Selected Body</span>
         <span className="tele-body-name">
           {loading ? 'LOADING...' : (data?.name ?? selectedBody).toUpperCase()}
         </span>
@@ -87,7 +87,7 @@ export default function TelemetryPanel({ selectedBody }: Props) {
               ? orb.periodDays > 365
                 ? `${(orb.periodDays / 365.25).toFixed(2)} yr`
                 : `${orb.periodDays.toFixed(1)} d`
-              : '—'}
+              : '-'}
           </span>
         </div>
         <div className="tele-row">
@@ -116,7 +116,7 @@ export default function TelemetryPanel({ selectedBody }: Props) {
         <div className="tele-row">
           <span className="tele-key">Mean Temp</span>
           <span className="tele-val amber">
-            {data?.meanTemp != null ? `${data.meanTemp} K` : '—'}
+            {data?.meanTemp != null ? `${data.meanTemp} K` : '-'}
           </span>
         </div>
         <div className="tele-row">
@@ -140,7 +140,7 @@ export default function TelemetryPanel({ selectedBody }: Props) {
           <span className="tele-val">
             {phys?.rotationPeriod != null
               ? `${Math.abs(phys.rotationPeriod).toFixed(1)} h${phys.rotationPeriod < 0 ? ' ®' : ''}`
-              : '—'}
+              : '-'}
           </span>
         </div>
         <div className="tele-row">

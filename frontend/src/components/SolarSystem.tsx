@@ -25,7 +25,7 @@ const PLANETS: PlanetDef[] = [
   { name: 'Saturn',   radius: 3.0,  orbitR: 50,  speed: 0.009,    texture: '/textures/2k_saturn.jpg', hasSaturnRing: true },
   { name: 'Uranus',   radius: 2.0,  orbitR: 63,  speed: 0.006,    texture: '/textures/2k_uranus.jpg' },
   { name: 'Neptune',  radius: 1.9,  orbitR: 75,  speed: 0.005,    texture: '/textures/2k_neptune.jpg' },
-  // Dwarf planets — positioned by compressed AU scale, speed by Kepler T∝a^1.5
+  // Dwarf planets - positioned by compressed AU scale, speed by Kepler T∝a^1.5
   { name: 'Ceres',    radius: 0.5,  orbitR: 28,  speed: 0.0065,   texture: '/textures/2k_ceres_fictional.jpg',    isDwarfPlanet: true },
   { name: 'Pluto',    radius: 0.6,  orbitR: 84,  speed: 0.00121,  texture: '/textures/2k_mercury.jpg', tint: 0xc8a46a, isDwarfPlanet: true },
   { name: 'Haumea',   radius: 0.5,  orbitR: 91,  speed: 0.00106,  texture: '/textures/2k_haumea_fictional.jpg',   isDwarfPlanet: true },
@@ -72,7 +72,7 @@ export default function SolarSystem({ onSelectBody }: SolarSystemProps) {
     scene.add(sunLight);
 
     // ── Milky Way skybox ─────────────────────────────────────────────
-    const skyTex = loader.load('/textures/8k.jpg');
+    const skyTex = loader.load('/textures/8k_stars.jpg');
     skyTex.minFilter = THREE.LinearMipmapLinearFilter;
     skyTex.magFilter = THREE.LinearFilter;
     skyTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
@@ -90,7 +90,7 @@ export default function SolarSystem({ onSelectBody }: SolarSystemProps) {
     const sun = new THREE.Mesh(sunGeo, sunMat);
     scene.add(sun);
 
-    // Sun glow — radial gradient sprites with additive blending for smooth fade
+    // Sun glow - radial gradient sprites with additive blending for smooth fade
     const makeGlowSprite = (size: number, innerColor: string, outerColor: string) => {
       const c = document.createElement('canvas'); c.width = 256; c.height = 256;
       const ctx = c.getContext('2d')!;
@@ -363,7 +363,7 @@ export default function SolarSystem({ onSelectBody }: SolarSystemProps) {
 
   return (
     <div className="scene-area" ref={mountRef}>
-      <div className="scene-label">SOLAR SYSTEM — DRAG TO ROTATE · SCROLL TO ZOOM · CLICK PLANET</div>
+      <div className="scene-label">SOLAR SYSTEM - DRAG TO ROTATE · SCROLL TO ZOOM · CLICK PLANET</div>
     </div>
   );
 }

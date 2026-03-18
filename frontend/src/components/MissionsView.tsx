@@ -89,9 +89,9 @@ export default function MissionsView() {
           {tab === 'pagerank' && (
             <>
               <div className="algo-description">
-                <span className="algo-label">CENTRALITY — PageRank</span>
+                <span className="algo-label">CENTRALITY - PageRank</span>
                 <p className="algo-text">
-                  Measures each agency's influence in the global space exploration network —
+                  Measures each agency's influence in the global space exploration network -
                   not just by mission count, but by connectedness to other agencies, rockets
                   and celestial targets.
                 </p>
@@ -118,7 +118,7 @@ export default function MissionsView() {
                 );
               })}
               <div className="algo-insight">
-                ↑ {pageRank[0]?.entity} ranks #1 — most influential actor in the space exploration graph
+                ↑ {pageRank[0]?.entity} ranks #1 - most influential actor in the space exploration graph
               </div>
             </>
           )}
@@ -127,7 +127,7 @@ export default function MissionsView() {
           {tab === 'community' && (
             <>
               <div className="algo-description">
-                <span className="algo-label">COMMUNITY DETECTION — Louvain</span>
+                <span className="algo-label">COMMUNITY DETECTION - Louvain</span>
                 <p className="algo-text">
                   Groups agencies into communities based on shared rockets, missions and
                   co-targeted bodies. Communities reflect geopolitical blocs and eras.
@@ -148,7 +148,7 @@ export default function MissionsView() {
                 </div>
               ))}
               <div className="algo-insight">
-                ↑ Louvain detected {Object.keys(byComm).length} communities — top 6 shown
+                ↑ Louvain detected {Object.keys(byComm).length} communities - top 6 shown
               </div>
             </>
           )}
@@ -157,9 +157,9 @@ export default function MissionsView() {
           {tab === 'similarity' && (
             <>
               <div className="algo-description">
-                <span className="algo-label">SIMILARITY — Node Similarity</span>
+                <span className="algo-label">SIMILARITY - Node Similarity</span>
                 <p className="algo-text">
-                  Identifies agency pairs with the most overlapping mission portfolios —
+                  Identifies agency pairs with the most overlapping mission portfolios -
                   same rockets, same targets. High similarity reveals natural competitors or
                   potential collaboration partners.
                 </p>
@@ -188,7 +188,7 @@ export default function MissionsView() {
           {tab === 'wcc' && (
             <>
               <div className="algo-description">
-                <span className="algo-label">CONNECTIVITY — Weakly Connected Components</span>
+                <span className="algo-label">CONNECTIVITY - Weakly Connected Components</span>
                 <p className="algo-text">
                   Finds isolated subgraphs. A single dominant component means the global
                   space program is deeply interconnected. Small outliers are short-lived
@@ -205,7 +205,7 @@ export default function MissionsView() {
                   <div className="tele-row">
                     <span className="tele-key">Coverage</span>
                     <span className="tele-val cyan">
-                      {totalNodes > 0 ? ((mainComp.size / totalNodes) * 100).toFixed(1) : '—'}%
+                      {totalNodes > 0 ? ((mainComp.size / totalNodes) * 100).toFixed(1) : '-'}%
                     </span>
                   </div>
                   <div className="tele-row">
