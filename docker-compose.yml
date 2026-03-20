@@ -17,21 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  postgres-observer:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: observer_db
-    volumes:
-      - postgres_observer_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   postgres-alert:
     image: postgres:16-alpine
     environment:
@@ -120,23 +105,6 @@ services:
       naming-server:
         condition: service_healthy
 
-  observer-service:
-    build:
-      context: .
-      dockerfile: observer-service/Dockerfile
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-observer:5432/observer_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
-      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
-    restart: unless-stopped
-    depends_on:
-      postgres-observer:
-        condition: service_healthy
-      naming-server:
-        condition: service_healthy
-
   alert-service:
     build:
       context: .
@@ -189,6 +157,5 @@ services:
 
 volumes:
   postgres_celestial_data:
-  postgres_observer_data:
   postgres_alert_data:
   neo4j_data:

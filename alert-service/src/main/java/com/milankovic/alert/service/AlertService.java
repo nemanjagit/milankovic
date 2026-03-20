@@ -1,6 +1,5 @@
 package com.milankovic.alert.service;
 
-import com.milankovic.alert.client.ObserverClient;
 import com.milankovic.alert.client.ThreatTrackerClient;
 import com.milankovic.alert.entity.Alert;
 import com.milankovic.alert.entity.EventLog;
@@ -26,17 +25,15 @@ public class AlertService {
     private final EventLogRepository eventLogRepository;
     private final AlertRuleRepository alertRuleRepository;
     private final ThreatTrackerClient threatTrackerClient;
-    private final ObserverClient observerClient;
 
     public AlertService(AlertRepository alertRepository, NotificationRepository notificationRepository,
                         EventLogRepository eventLogRepository, AlertRuleRepository alertRuleRepository,
-                        ThreatTrackerClient threatTrackerClient, ObserverClient observerClient) {
+                        ThreatTrackerClient threatTrackerClient) {
         this.alertRepository = alertRepository;
         this.notificationRepository = notificationRepository;
         this.eventLogRepository = eventLogRepository;
         this.alertRuleRepository = alertRuleRepository;
         this.threatTrackerClient = threatTrackerClient;
-        this.observerClient = observerClient;
     }
 
     // Retry every 90 s until we get alerts (threat-tracker may still be seeding on first boot)
@@ -82,17 +79,6 @@ public class AlertService {
                 alert.setSeverity(calculateSeverity(distAu));
                 alert = alertRepository.save(alert);
                 generated++;
-
-                // Notify relevant observers via watchlists
-                try {
-                    List<Map<String, Object>> observers = observerClient.getAllObservers();
-                    for (Map<String, Object> observer : observers) {
-                        Long observerId = ((Number) observer.get("id")).longValue();
-                        sendNotification(alert, observerId);
-                    }
-                } catch (FeignException e) {
-                    logEvent("NOTIFY_ERROR", "observer-service", "Failed to fetch observers: " + e.getMessage());
-                }
 
                 logEvent("ALERT_GENERATED", "alert-service", "Alert " + alert.getId() + " for " + bodyId + " → " + planet);
             }

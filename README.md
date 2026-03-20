@@ -15,7 +15,6 @@ MILANKOVIC pulls together real astronomical data from multiple public APIs and p
 - **Threat Monitor** - near-Earth objects pulled from NASA's JPL database, categorised by how close they pass Earth. Objects within 0.05 AU are flagged as hazardous and tracked with `THREATENS` relationships in Neo4j.
 - **Mission Network** - ~4,600 space missions from 1957 to present, modelled as a graph in Neo4j. Explore agency networks, mission timelines, rocket usage, and collaboration clusters powered by GDS algorithms.
 - **Alert Feed** - automatically generated alerts for any threatening NEO. Each alert carries a severity (LOW / MED / HIGH / CRITICAL) based on approach distance, and can be escalated manually.
-- **Observers & Missions** - users can register as observers, build watchlists of bodies they care about, and create tracking missions with activation workflows.
 
 ---
 
@@ -26,11 +25,11 @@ MILANKOVIC pulls together real astronomical data from multiple public APIs and p
        ↓
 API Gateway :8080  (JWT auth, routing)
        ↓
-┌──────────────────┬───────────────────┬──────────────────┬─────────────────┐
-│ Celestial Body   │  Threat Tracker   │    Observer      │     Alert       │
-│    :8081         │     :8082         │     :8083        │     :8084       │
-│  PostgreSQL      │     Neo4j         │  PostgreSQL      │  PostgreSQL     │
-└──────────────────┴───────────────────┴──────────────────┴─────────────────┘
+┌──────────────────┬───────────────────┬─────────────────┐
+│ Celestial Body   │  Threat Tracker   │     Alert       │
+│    :8081         │     :8082         │     :8084       │
+│  PostgreSQL      │     Neo4j         │  PostgreSQL     │
+└──────────────────┴───────────────────┴─────────────────┘
        ↑ All registered on Eureka Naming Server :8761
 ```
 
@@ -59,11 +58,8 @@ The source of truth for solar system bodies. On first boot, seeds ~515 bodies fr
 ### Threat Tracker Service (:8082)
 Dual-purpose service. On the threat side, it pulls close approach data from NASA's JPL CAD API (~24k approach records) and builds a Neo4j graph of `SmallBody → APPROACHES/THREATENS → Planet` relationships. On the missions side, it seeds ~4,600 historical space missions into a separate Neo4j graph and exposes GDS analytics endpoints (PageRank, Louvain, NodeSimilarity, WCC) over that graph.
 
-### Observer Service (:8083)
-Handles user-facing operations: creating observers, managing watchlists of bodies they want to track, and defining tracking missions. When an observer creates a watchlist entry, this service calls Celestial Body Service via Feign to validate the body exists. A `threat-summary` endpoint aggregates threat levels across all entries in an observer's watchlist.
-
 ### Alert Service (:8084)
-Scans for threats every 6 hours by calling Threat Tracker via Feign. For each threatening NEO, it checks whether an open alert already exists and creates one if not, then notifies all registered observers. Provides a dashboard with counts by severity and 30-day trend. Alerts can be manually escalated through the UI.
+Scans for threats every 6 hours by calling Threat Tracker via Feign. For each threatening NEO, it checks whether an open alert already exists and creates one if not. Provides a dashboard with counts by severity and 30-day trend. Alerts can be manually escalated through the UI.
 
 ---
 
@@ -178,7 +174,6 @@ milankovic/
 ├── config-server/
 ├── celestial-body-service/
 ├── threat-tracker-service/
-├── observer-service/
 ├── alert-service/
 ├── frontend/
 ├── docker-compose.yml
