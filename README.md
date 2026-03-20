@@ -78,6 +78,8 @@ Scans for threats every 6 hours by calling Threat Tracker via Feign. For each th
 docker-compose up
 ```
 
+Once running, open **http://localhost** in your browser.
+
 All services start automatically. On first boot, seeding runs in the background:
 - Celestial bodies seed from the Solar System OpenData API
 - Space missions + NEO threats seed from JPL APIs (Neo4j - takes a few minutes)
@@ -110,17 +112,11 @@ docker-compose up --build
 
 ### Authentication
 
-```bash
-# Register
-curl -X POST http://localhost:8080/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123","role":"ROLE_ADMIN"}'
+A default admin account is available on first boot:
 
-# Login
-curl -X POST http://localhost:8080/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
-```
+| Username | Password |
+|---|---|
+| `admin` | `admin123` |
 
 All protected endpoints require `Authorization: Bearer <token>`.
 

@@ -26,6 +26,7 @@ public class AuthController {
         users.put("admin", new UserRecord("admin", "admin123", List.of("ROLE_ADMIN", "ROLE_OBSERVER")));
     }
 
+    // Not used — admin account is pre-seeded in the constructor
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegisterRequest req) {
         if (users.containsKey(req.username())) {
