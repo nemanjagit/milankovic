@@ -94,27 +94,24 @@ body::after {
 
 /* ─── App Layout ──────────────────────────────────────────────────── */
 .app-root {
-  display: grid;
-  grid-template-rows: var(--navbar-h) 1fr var(--statsbar-h);
-  grid-template-columns: var(--sidebar-w) 1fr var(--telemetry-w);
-  grid-template-areas:
-    "nav    nav    nav"
-    "side   scene  tele"
-    "stats  stats  stats";
+  position: relative;
   width: 100vw;
   height: 100vh;
-  gap: 0;
+  overflow: hidden;
 }
 
 /* ─── Navbar ──────────────────────────────────────────────────────── */
 .navbar {
-  grid-area: nav;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--navbar-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--glass-border);
-  background: rgba(2, 4, 8, 0.90);
+  background: rgba(2, 4, 8, 0.55);
+  backdrop-filter: blur(8px);
   z-index: 100;
 }
 
@@ -194,11 +191,17 @@ body::after {
 
 /* ─── Sidebar ─────────────────────────────────────────────────────── */
 .sidebar {
-  grid-area: side;
+  position: absolute;
+  top: var(--navbar-h);
+  left: 0;
+  bottom: var(--statsbar-h);
+  width: var(--sidebar-w);
   overflow-y: auto;
   padding: 12px 8px;
   border-right: 1px solid var(--glass-border);
-  background: rgba(2,4,8,0.7);
+  background: rgba(2,4,8,0.45);
+  backdrop-filter: blur(8px);
+  z-index: 10;
 }
 
 .sidebar-group-label {
@@ -285,10 +288,11 @@ body::after {
 
 /* ─── Scene (Three.js) ────────────────────────────────────────────── */
 .scene-area {
-  grid-area: scene;
-  position: relative;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   background: #000;
+  z-index: 0;
 }
 
 .scene-area canvas {
@@ -312,14 +316,20 @@ body::after {
 
 /* ─── Telemetry Panel ─────────────────────────────────────────────── */
 .telemetry {
-  grid-area: tele;
+  position: absolute;
+  top: var(--navbar-h);
+  right: 0;
+  bottom: var(--statsbar-h);
+  width: var(--telemetry-w);
   overflow-y: auto;
   padding: 16px 14px;
   border-left: 1px solid var(--glass-border);
-  background: rgba(2,4,8,0.8);
+  background: rgba(2,4,8,0.45);
+  backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   gap: 14px;
+  z-index: 10;
 }
 
 .tele-header {
@@ -471,14 +481,18 @@ body::after {
 
 /* ─── Stats Bar ───────────────────────────────────────────────────── */
 .statsbar {
-  grid-area: stats;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: var(--statsbar-h);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 24px;
   padding: 0 24px;
   border-top: 1px solid var(--glass-border);
-  background: rgba(2,4,8,0.90);
+  background: rgba(2,4,8,0.45);
+  backdrop-filter: blur(8px);
+  z-index: 10;
 }
 
 .stat-card {
@@ -518,24 +532,16 @@ body::after {
   background: var(--glass-border);
 }
 
-/* ─── Layout variants ─────────────────────────────────────────────── */
-.app-root--missions,
-.app-root--threats,
-.app-root--alerts,
-.app-root--bodies,
-.app-root--satellites {
-  grid-template-areas:
-    "nav   nav   nav"
-    "main  main  main"
-    "stats stats stats";
-  grid-template-columns: 1fr;
-}
-
 .full-view {
-  grid-area: main;
+  position: absolute;
+  top: var(--navbar-h);
+  left: 0;
+  right: 0;
+  bottom: var(--statsbar-h);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  z-index: 1;
 }
 
 /* ─── Navbar right group ──────────────────────────────────────────── */

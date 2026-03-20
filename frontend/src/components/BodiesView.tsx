@@ -46,8 +46,8 @@ export default function BodiesView() {
     getBodies(page, 24, type)
       .then((p) => {
         setBodies(p.content);
-        setTotalPages(p.totalPages);
-        setTotalElements(p.totalElements);
+        setTotalPages(p.totalPages ?? p.page?.totalPages ?? 0);
+        setTotalElements(p.totalElements ?? p.page?.totalElements ?? 0);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

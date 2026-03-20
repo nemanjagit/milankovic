@@ -34,7 +34,7 @@ API Gateway :8080  (JWT auth, routing)
        ↑ All registered on Eureka Naming Server :8761
 ```
 
-Services communicate via Feign. The API Gateway handles all JWT authentication and route filtering. Config Server is available at :8888.
+Services communicate via Feign. The API Gateway handles all JWT authentication and route filtering.
 
 ---
 
@@ -82,8 +82,10 @@ Once running, open **http://localhost** in your browser.
 
 All services start automatically. On first boot, seeding runs in the background:
 - Celestial bodies seed from the Solar System OpenData API
-- Space missions + NEO threats seed from JPL APIs (Neo4j - takes a few minutes)
+- Space missions + NEO threats seed from JPL APIs into Neo4j - **this takes 5-10 minutes**
 - Alerts generate automatically once threats are ready (~90s retry loop)
+
+> **First boot note:** The missions and threat screens will appear empty until Neo4j finishes seeding. This is normal - grab a coffee.
 
 ### Stop (data persists)
 
@@ -128,13 +130,11 @@ The frontend is a single-page React app served on port 80. Navigation is on the 
 
 | View | What you see |
 |---|---|
-| **Dashboard** | Live stats bar - total bodies, missions, open alerts. Overview cards. |
-| **Solar System** | Interactive 3D solar system. Click a body to open its telemetry panel on the right. Scroll to zoom, drag to orbit. |
+| **Dashboard** | Interactive 3D solar system. Click any body to open its telemetry panel on the right. Scroll to zoom, drag to orbit. Stats bar shows live counts at the bottom. |
 | **Satellites** | 3D Earth with live satellite positions. Toggle categories (ISS, Starlink, GPS, Weather) from the right panel. Click a satellite to see its orbit path. |
 | **Threats** | Force-directed graph of the NEO threat network - bodies, planets, and relationships. Filter by hazardous, sort by distance. |
 | **Missions** | Space mission explorer. Browse by agency, filter by status/year. Agency network graphs show collaboration clusters. |
 | **Alerts** | Active threat alerts with severity breakdown. Filter by severity, paginate through records. Escalate alerts from the table. |
-| **Observers** | Observer management - register observers, manage watchlists and tracking missions. |
 
 ---
 

@@ -60,9 +60,10 @@ export async function login(username: string, password: string): Promise<string>
 // ── Bodies ────────────────────────────────────────────────────────────────────
 export interface PagedResponse<T> {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
+  totalElements?: number;
+  totalPages?: number;
+  number?: number;
+  page?: { totalElements: number; totalPages: number; size: number; number: number };
 }
 
 export interface BodySummary {

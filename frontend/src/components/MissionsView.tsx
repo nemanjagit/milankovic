@@ -27,7 +27,7 @@ export default function MissionsView() {
 
   useEffect(() => {
     Promise.all([
-      getAgencies(),
+      getAgencies().catch((): Agency[] => []),
       getPageRank().catch((): PageRankEntry[] => []),
       getAgencyCommunities().catch((): AgencyCommunity[] => []),
       getSimilarity().catch((): SimilarityPair[] => []),

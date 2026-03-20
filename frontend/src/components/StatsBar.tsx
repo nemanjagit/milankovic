@@ -12,7 +12,7 @@ export default function StatsBar() {
       .catch(() => {});
 
     getMissions(0, 1)
-      .then((p) => { if (p.totalElements != null) setMissions(p.totalElements); })
+      .then((p) => { const total = p.page?.totalElements ?? p.totalElements; if (total != null) setMissions(total); })
       .catch(() => {});
 
     getAlertsDashboard()
