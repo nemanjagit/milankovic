@@ -13,7 +13,6 @@ export default defineConfig({
       '/targets':   { target: 'http://localhost:8080', changeOrigin: true },
       '/analytics': { target: 'http://localhost:8080', changeOrigin: true },
       '/threats':   { target: 'http://localhost:8080', changeOrigin: true },
-      '/observers': { target: 'http://localhost:8080', changeOrigin: true },
       '/alerts':    { target: 'http://localhost:8080', changeOrigin: true },
       '/celestrak': {
         target: 'https://celestrak.org',

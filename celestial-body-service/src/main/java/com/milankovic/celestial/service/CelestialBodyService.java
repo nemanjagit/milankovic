@@ -110,9 +110,9 @@ public class CelestialBodyService {
 
             Body body = bodyRepository.findById(id).orElse(new Body());
             body.setId(id);
-            body.setName((String) data.get("englishName"));
+            body.setName(firstNonBlank((String) data.get("englishName"), (String) data.get("name"), id));
             body.setBodyType((String) data.get("bodyType"));
-            body.setDiscoveredBy((String) data.get("discoveredBy"));
+            body.setDiscoveredBy(blankToNull((String) data.get("discoveredBy")));
 
             Object massObj = data.get("mass");
             if (massObj instanceof Map<?, ?> massMap) {
@@ -124,20 +124,21 @@ public class CelestialBodyService {
             }
 
             Object meanRadius = data.get("meanRadius");
-            if (meanRadius instanceof Number r) body.setRadius(r.doubleValue());
+            if (meanRadius instanceof Number r) body.setRadius(normalizeRadius(r.doubleValue()));
 
             Object meanTemp = data.get("avgTemp");
-            if (meanTemp instanceof Number t) body.setMeanTemp(t.intValue());
+            if (meanTemp instanceof Number t) body.setMeanTemp(normalizeTemperature(t.intValue()));
 
             body = bodyRepository.save(body);
 
             // Orbital data
             OrbitalData orbital = body.getOrbitalData() != null ? body.getOrbitalData() : new OrbitalData();
             orbital.setBody(body);
-            orbital.setSemiMajorAxis(toDouble(data.get("semimajorAxis")));
-            orbital.setPeriodDays(toDouble(data.get("sideralOrbit")));
-            orbital.setEccentricity(toDouble(data.get("eccentricity")));
-            orbital.setInclination(toDouble(data.get("inclination")));
+            orbital.setSemiMajorAxis(normalizeZeroToNull(toDouble(data.get("semimajorAxis"))));
+            orbital.setPeriodDays(normalizeZeroToNull(toDouble(data.get("sideralOrbit"))));
+            orbital.setEccentricity(normalizeZeroToNull(toDouble(data.get("eccentricity"))));
+            orbital.setInclination(normalizeZeroToNull(toDouble(data.get("inclination"))));
+            orbital.setMainAnomaly(normalizeZeroToNull(toDouble(data.get("mainAnomaly"))));
 
             Object vol = data.get("vol");
             if (vol instanceof Map<?, ?> volMap) {
@@ -152,11 +153,10 @@ public class CelestialBodyService {
             // Physical properties
             PhysicalProperties phys = body.getPhysicalProperties() != null ? body.getPhysicalProperties() : new PhysicalProperties();
             phys.setBody(body);
-            phys.setGravity(toDouble(data.get("gravity")));
-            phys.setEscapeSpeed(toDouble(data.get("escape")));
-            phys.setRotationPeriod(toDouble(data.get("sideralRotation")));
-            phys.setAxialTilt(toDouble(data.get("axialTilt")));
-            phys.setSurfacePressure(toDouble(data.get("mainAnomaly")));
+            phys.setGravity(normalizeZeroToNull(toDouble(data.get("gravity"))));
+            phys.setEscapeSpeed(normalizeZeroToNull(toDouble(data.get("escape"))));
+            phys.setRotationPeriod(normalizeZeroToNull(toDouble(data.get("sideralRotation"))));
+            phys.setAxialTilt(normalizeZeroToNull(toDouble(data.get("axialTilt"))));
             body.setPhysicalProperties(phys);
 
             bodyRepository.save(body);
@@ -188,6 +188,40 @@ public class CelestialBodyService {
         return null;
     }
 
+    private Double normalizeZeroToNull(Double value) {
+        if (value == null || Double.compare(value, 0.0) == 0) {
+            return null;
+        }
+        return value;
+    }
+
+    private Double normalizeRadius(Double value) {
+        return normalizeZeroToNull(value);
+    }
+
+    private Integer normalizeTemperature(Integer value) {
+        if (value == null || value == 0) {
+            return null;
+        }
+        return value;
+    }
+
+    private String blankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value;
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     private BodyResponse toResponse(Body body) {
         BodyResponse r = new BodyResponse();
         r.setId(body.getId());
@@ -210,6 +244,7 @@ public class CelestialBodyService {
             dto.setPeriodDays(o.getPeriodDays());
             dto.setEccentricity(o.getEccentricity());
             dto.setInclination(o.getInclination());
+            dto.setMainAnomaly(o.getMainAnomaly());
             dto.setVelocityKmS(o.getVelocityKmS());
             r.setOrbitalData(dto);
         }

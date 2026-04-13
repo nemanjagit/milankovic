@@ -184,6 +184,11 @@ export default function BodiesView() {
             <div className="tele-row"><span className="tele-key">Inclination</span>
               <span className="tele-val">{fmt(selected.orbitalData?.inclination, 2, '°')}</span>
             </div>
+            {selected.orbitalData?.mainAnomaly != null && (
+              <div className="tele-row"><span className="tele-key">Mean Anomaly</span>
+                <span className="tele-val">{fmt(selected.orbitalData.mainAnomaly, 2, '°')}</span>
+              </div>
+            )}
             <div className="tele-row"><span className="tele-key">Velocity</span>
               <span className="tele-val">{fmt(selected.orbitalData?.velocityKmS, 2, 'km/s')}</span>
             </div>

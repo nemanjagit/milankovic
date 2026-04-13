@@ -32,6 +32,21 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-auth:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth_db
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   neo4j:
     image: neo4j:5.15.0
     environment:
@@ -70,6 +85,23 @@ services:
       start_period: 30s
 
   # ─── Microservices ────────────────────────────────────────────
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://naming-server:8761/eureka/
+      EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+    restart: unless-stopped
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      naming-server:
+        condition: service_healthy
 
   celestial-body-service:
     build:
@@ -141,6 +173,8 @@ services:
     depends_on:
       naming-server:
         condition: service_healthy
+      auth-service:
+        condition: service_started
 
   # ─── Frontend ─────────────────────────────────────────────────
 
@@ -158,4 +192,5 @@ services:
 volumes:
   postgres_celestial_data:
   postgres_alert_data:
+  postgres_auth_data:
   neo4j_data:

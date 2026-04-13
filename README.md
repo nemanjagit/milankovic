@@ -23,17 +23,17 @@ MILANKOVIC pulls together real astronomical data from multiple public APIs and p
 ```
 [ React Frontend ]
        ↓
-API Gateway :8080  (JWT auth, routing)
+API Gateway :8080  (JWT validation, routing)
        ↓
-┌──────────────────┬───────────────────┬─────────────────┐
-│ Celestial Body   │  Threat Tracker   │     Alert       │
-│    :8081         │     :8082         │     :8084       │
-│  PostgreSQL      │     Neo4j         │  PostgreSQL     │
-└──────────────────┴───────────────────┴─────────────────┘
+┌─────────────┬──────────────────┬───────────────────┬─────────────────┐
+│    Auth     │ Celestial Body   │  Threat Tracker   │     Alert       │
+│   :8083     │    :8081         │     :8082         │     :8084       │
+│ PostgreSQL  │  PostgreSQL      │     Neo4j         │  PostgreSQL     │
+└─────────────┴──────────────────┴───────────────────┴─────────────────┘
        ↑ All registered on Eureka Naming Server :8761
 ```
 
-Services communicate via Feign. The API Gateway handles all JWT authentication and route filtering.
+Services communicate via Feign. The auth-service issues JWTs, and the API Gateway validates them and enforces route security.
 
 ---
 
@@ -42,7 +42,7 @@ Services communicate via Feign. The API Gateway handles all JWT authentication a
 | Layer | Technology |
 |---|---|
 | Backend | Java 21 · Spring Boot 3 · Spring Cloud |
-| Relational DB | PostgreSQL (3 isolated instances) |
+| Relational DB | PostgreSQL (4 isolated instances) |
 | Graph DB | Neo4j 5 + Graph Data Science plugin |
 | API | Spring Cloud Gateway · Eureka · Feign · JWT |
 | Frontend | React + TypeScript · Three.js · Vite |
@@ -51,6 +51,9 @@ Services communicate via Feign. The API Gateway handles all JWT authentication a
 ---
 
 ## 📦 Services
+
+### Auth Service (:8083)
+Owns user registration and login. Stores users and roles in PostgreSQL, hashes passwords with BCrypt, seeds a default admin account on first boot, and issues JWTs consumed by the API Gateway.
 
 ### Celestial Body Service (:8081)
 The source of truth for solar system bodies. On first boot, seeds ~515 bodies from the Solar System OpenData API - planets, moons, asteroids, comets - each with full orbital elements and physical properties. The frontend's 3D solar system and body detail panels are driven entirely by this service.
@@ -170,6 +173,7 @@ The missions graph covers ~4,600 space missions from 1957 to present across ~70 
 ```
 milankovic/
 ├── api-gateway/
+├── auth-service/
 ├── naming-server/
 ├── config-server/
 ├── celestial-body-service/

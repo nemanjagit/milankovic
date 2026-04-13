@@ -4,19 +4,19 @@ WORKDIR /build
 COPY pom.xml .
 COPY naming-server/pom.xml           naming-server/
 COPY config-server/pom.xml           config-server/
+COPY auth-service/pom.xml            auth-service/
 COPY api-gateway/pom.xml             api-gateway/
 COPY celestial-body-service/pom.xml  celestial-body-service/
 COPY threat-tracker-service/pom.xml  threat-tracker-service/
-COPY observer-service/pom.xml        observer-service/
 COPY alert-service/pom.xml           alert-service/
 
-RUN mvn dependency:resolve -pl observer-service -q --no-transfer-progress
+RUN mvn dependency:resolve -pl auth-service -q --no-transfer-progress
 
-COPY observer-service/src observer-service/src
-RUN mvn package -pl observer-service -DskipTests --no-transfer-progress
+COPY auth-service/src auth-service/src
+RUN mvn package -pl auth-service -DskipTests --no-transfer-progress
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /build/observer-service/target/*.jar app.jar
+COPY --from=builder /build/auth-service/target/*.jar app.jar
 EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "app.jar"]

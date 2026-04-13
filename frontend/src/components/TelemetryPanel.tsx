@@ -102,6 +102,12 @@ export default function TelemetryPanel({ selectedBody }: Props) {
           <span className="tele-key">Inclination</span>
           <span className="tele-val">{fmt(orb?.inclination, 2, '°')}</span>
         </div>
+        {orb?.mainAnomaly != null && (
+          <div className="tele-row">
+            <span className="tele-key">Mean Anomaly</span>
+            <span className="tele-val">{fmt(orb.mainAnomaly, 2, '°')}</span>
+          </div>
+        )}
         <div className="tele-row">
           <span className="tele-key">Velocity</span>
           <span className="tele-val">{fmt(orb?.velocityKmS, 2, 'km/s')}</span>

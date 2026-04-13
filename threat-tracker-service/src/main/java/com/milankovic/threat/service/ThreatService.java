@@ -3,6 +3,8 @@ package com.milankovic.threat.service;
 import com.milankovic.threat.entity.SmallBody;
 import com.milankovic.threat.exception.ThreatScanException;
 import com.milankovic.threat.repository.SmallBodyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import java.util.*;
 
 @Service
 public class ThreatService {
+
+    private static final Logger log = LoggerFactory.getLogger(ThreatService.class);
 
     private final SmallBodyRepository smallBodyRepository;
     private final Neo4jClient neo4jClient;
@@ -67,14 +71,17 @@ public class ThreatService {
 
     @SuppressWarnings("unchecked")
     public int seedThreats() {
+        long startedAt = System.currentTimeMillis();
         try {
             String url = cadUrl + "?dist-max=0.2&date-min=2020-01-01&body=Earth&nea-comet=Y";
+            log.info("Threat reseed started: fetching CAD data from {}", url);
             Map<String, Object> response = restTemplate.getForObject(url, Map.class);
             if (response == null) throw new ThreatScanException("JPL CAD API returned null");
 
             List<String> fields = (List<String>) response.get("fields");
             List<List<Object>> data = (List<List<Object>>) response.get("data");
             if (data == null) return 0;
+            log.info("Threat reseed fetch complete: received {} CAD rows", data.size());
 
             int desIdx = fields.indexOf("des");
             int cdIdx = fields.indexOf("cd");
@@ -84,7 +91,7 @@ public class ThreatService {
             List<Map<String, Object>> bodies = new ArrayList<>();
             List<Map<String, Object>> approaches = new ArrayList<>();
             List<String> threatIds = new ArrayList<>();
-            Set<String> seenBodies = new HashSet<>();
+            Map<String, Map<String, Object>> bodyById = new LinkedHashMap<>();
 
             for (List<Object> row : data) {
                 String des = row.get(desIdx).toString().trim();
@@ -96,13 +103,16 @@ public class ThreatService {
 
                 boolean hazardous = distAu < 0.05;
 
-                if (!seenBodies.contains(des)) {
+                Map<String, Object> body = bodyById.computeIfAbsent(des, ignored -> {
                     Map<String, Object> b = new HashMap<>();
                     b.put("id", des);
                     b.put("name", des);
-                    b.put("hazardous", hazardous);
-                    bodies.add(b);
-                    seenBodies.add(des);
+                    b.put("hazardous", false);
+                    return b;
+                });
+
+                if (hazardous) {
+                    body.put("hazardous", true);
                 }
 
                 Map<String, Object> a = new HashMap<>();
@@ -114,10 +124,16 @@ public class ThreatService {
                 if (hazardous) threatIds.add(des);
             }
 
+            bodies.addAll(bodyById.values());
+            log.info("Threat reseed prepared batches: {} bodies, {} approaches, {} threat links",
+                    bodies.size(), approaches.size(), threatIds.size());
+
             // Ensure Earth exists
+            log.info("Threat reseed step: ensuring Earth node exists");
             neo4jClient.query("MERGE (p:Planet {name: 'Earth'})").run();
 
             // Batch MERGE SmallBody nodes
+            log.info("Threat reseed step: writing {} SmallBody nodes", bodies.size());
             neo4jClient.query("""
                     UNWIND $bodies AS b
                     MERGE (s:SmallBody {id: b.id})
@@ -125,8 +141,10 @@ public class ThreatService {
                     """)
                     .bind(bodies).to("bodies")
                     .run();
+            log.info("Threat reseed step complete: SmallBody nodes written");
 
             // Batch MERGE APPROACHES relationships
+            log.info("Threat reseed step: writing {} APPROACHES relationships", approaches.size());
             neo4jClient.query("""
                     UNWIND $approaches AS a
                     MATCH (s:SmallBody {id: a.id}), (p:Planet {name: 'Earth'})
@@ -134,9 +152,11 @@ public class ThreatService {
                     """)
                     .bind(approaches).to("approaches")
                     .run();
+            log.info("Threat reseed step complete: APPROACHES relationships written");
 
             // Batch MERGE THREATENS relationships
             if (!threatIds.isEmpty()) {
+                log.info("Threat reseed step: writing {} THREATENS relationships", threatIds.size());
                 neo4jClient.query("""
                         UNWIND $ids AS id
                         MATCH (s:SmallBody {id: id}), (p:Planet {name: 'Earth'})
@@ -144,13 +164,17 @@ public class ThreatService {
                         """)
                         .bind(threatIds).to("ids")
                         .run();
+                log.info("Threat reseed step complete: THREATENS relationships written");
             }
 
+            log.info("Threat reseed finished successfully in {} ms", System.currentTimeMillis() - startedAt);
             return approaches.size();
 
         } catch (ThreatScanException e) {
+            log.error("Threat reseed failed after {} ms: {}", System.currentTimeMillis() - startedAt, e.getMessage());
             throw e;
         } catch (Exception e) {
+            log.error("Threat reseed failed after {} ms", System.currentTimeMillis() - startedAt, e);
             throw new ThreatScanException("Failed to seed threats: " + e.getMessage());
         }
     }

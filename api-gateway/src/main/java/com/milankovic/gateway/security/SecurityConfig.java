@@ -1,5 +1,6 @@
 package com.milankovic.gateway.security;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -24,7 +25,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
-                        .pathMatchers("POST", "/bodies/seed", "/missions/seed", "/threats/seed").hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(HttpMethod.POST, "/bodies/seed", "/missions/seed", "/threats/seed", "/alerts/scan", "/alerts/rules").hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(HttpMethod.DELETE, "/alerts/rules/**").hasAuthority("ROLE_ADMIN")
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)

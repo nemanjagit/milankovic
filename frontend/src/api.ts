@@ -81,6 +81,7 @@ export interface OrbitalData {
   periodDays: number | null;
   eccentricity: number | null;
   inclination: number | null;
+  mainAnomaly: number | null;
   velocityKmS: number | null;
 }
 
@@ -89,7 +90,6 @@ export interface PhysicalProperties {
   escapeSpeed: number | null;
   rotationPeriod: number | null;
   axialTilt: number | null;
-  surfacePressure: number | null;
 }
 
 export interface MoonSummary {

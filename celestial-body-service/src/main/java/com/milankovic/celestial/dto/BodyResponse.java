@@ -46,6 +46,7 @@ public class BodyResponse {
         private Double periodDays;
         private Double eccentricity;
         private Double inclination;
+        private Double mainAnomaly;
         private Double velocityKmS;
 
         public Double getSemiMajorAxis() { return semiMajorAxis; }
@@ -59,6 +60,9 @@ public class BodyResponse {
 
         public Double getInclination() { return inclination; }
         public void setInclination(Double inclination) { this.inclination = inclination; }
+
+        public Double getMainAnomaly() { return mainAnomaly; }
+        public void setMainAnomaly(Double mainAnomaly) { this.mainAnomaly = mainAnomaly; }
 
         public Double getVelocityKmS() { return velocityKmS; }
         public void setVelocityKmS(Double velocityKmS) { this.velocityKmS = velocityKmS; }

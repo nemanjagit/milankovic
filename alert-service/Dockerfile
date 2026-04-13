@@ -4,10 +4,10 @@ WORKDIR /build
 COPY pom.xml .
 COPY naming-server/pom.xml           naming-server/
 COPY config-server/pom.xml           config-server/
+COPY auth-service/pom.xml            auth-service/
 COPY api-gateway/pom.xml             api-gateway/
 COPY celestial-body-service/pom.xml  celestial-body-service/
 COPY threat-tracker-service/pom.xml  threat-tracker-service/
-COPY observer-service/pom.xml        observer-service/
 COPY alert-service/pom.xml           alert-service/
 
 RUN mvn dependency:resolve -pl alert-service -q --no-transfer-progress

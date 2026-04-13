@@ -63,19 +63,40 @@ const EARTH_FRAG = `
   }
 `;
 
-// Approximate sun direction in Three.js scene space from current UTC time
+// Solar direction in scene space from current UTC time.
+// Computes apparent solar longitude and converts to equatorial coordinates.
 function computeSunDirection(date: Date): THREE.Vector3 {
   const jd = date.getTime() / 86400000 + 2440587.5;
-  const n  = jd - 2451545.0;
-  const L  = ((280.460 + 0.9856474 * n) % 360 + 360) % 360;
-  const g  = (((357.528 + 0.9856003 * n) % 360 + 360) % 360) * Math.PI / 180;
-  const lm = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * Math.PI / 180;
-  const ep = 23.439 * Math.PI / 180;
-  // ECI (x,y,z) → Three.js (x, z, -y)
+  const t = (jd - 2451545.0) / 36525.0;
+  const deg = Math.PI / 180;
+
+  const normalizeDeg = (value: number) => ((value % 360) + 360) % 360;
+
+  const l0 = normalizeDeg(280.46646 + t * (36000.76983 + t * 0.0003032));
+  const m = normalizeDeg(357.52911 + t * (35999.05029 - 0.0001537 * t));
+  const c =
+    Math.sin(m * deg) * (1.914602 - t * (0.004817 + 0.000014 * t)) +
+    Math.sin(2 * m * deg) * (0.019993 - 0.000101 * t) +
+    Math.sin(3 * m * deg) * 0.000289;
+  const omega = 125.04 - 1934.136 * t;
+  const lambda = (l0 + c - 0.00569 - 0.00478 * Math.sin(omega * deg)) * deg;
+
+  const seconds = 21.448 - t * (46.815 + t * (0.00059 - 0.001813 * t));
+  const epsilon0 = (23 + (26 + seconds / 60) / 60) * deg;
+  const epsilon = epsilon0 + 0.00256 * deg * Math.cos(omega * deg);
+
+  const rightAscension = Math.atan2(Math.cos(epsilon) * Math.sin(lambda), Math.cos(lambda));
+  const declination = Math.asin(Math.sin(epsilon) * Math.sin(lambda));
+
+  const x = Math.cos(declination) * Math.cos(rightAscension);
+  const y = Math.cos(declination) * Math.sin(rightAscension);
+  const z = Math.sin(declination);
+
+  // ECI (x, y, z) -> Three.js (x, z, -y)
   return new THREE.Vector3(
-    Math.cos(lm),
-    Math.sin(lm) * Math.sin(ep),
-    -Math.sin(lm) * Math.cos(ep),
+    x,
+    z,
+    -y,
   ).normalize();
 }
 
@@ -254,6 +275,11 @@ export default function SatellitesView() {
         if (aborted) return;
         // Remove reservation so user can retry by toggling again
         catSatrecs.delete(cat.key);
+        setActiveCategories(prev => {
+          const next = new Set(prev);
+          next.delete(cat.key);
+          return next;
+        });
         if (cat.key === 'stations') { setLoading(false); setStatus(`${cat.label}: failed to load`); }
         else { setStatus(`${cat.label}: failed to load`); }
       } finally {
@@ -512,13 +538,18 @@ export default function SatellitesView() {
   }, []);
 
   const toggleCategory = (key: Category) => {
+    const shouldFetch = !activeCategories.has(key);
     setActiveCategories((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key); else next.add(key);
+      if (shouldFetch) next.add(key);
+      else next.delete(key);
       return next;
     });
-    // Trigger lazy fetch — fetchCategory inside the closure guards against double-loads
-    fetchCatFnRef.current?.(key);
+    setStatus('');
+    if (shouldFetch) {
+      // Trigger lazy fetch — fetchCategory inside the closure guards against double-loads
+      fetchCatFnRef.current?.(key);
+    }
   };
 
   return (

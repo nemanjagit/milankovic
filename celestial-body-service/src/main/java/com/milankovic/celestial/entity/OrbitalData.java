@@ -26,6 +26,9 @@ public class OrbitalData {
     @Column(name = "inclination")
     private Double inclination;
 
+    @Column(name = "main_anomaly")
+    private Double mainAnomaly;
+
     @Column(name = "velocity_km_s")
     private Double velocityKmS;
 
@@ -48,6 +51,9 @@ public class OrbitalData {
 
     public Double getInclination() { return inclination; }
     public void setInclination(Double inclination) { this.inclination = inclination; }
+
+    public Double getMainAnomaly() { return mainAnomaly; }
+    public void setMainAnomaly(Double mainAnomaly) { this.mainAnomaly = mainAnomaly; }
 
     public Double getVelocityKmS() { return velocityKmS; }
     public void setVelocityKmS(Double velocityKmS) { this.velocityKmS = velocityKmS; }
