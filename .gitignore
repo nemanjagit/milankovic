@@ -83,7 +83,3 @@ logs/
 *.sw?
 *.bak
 *.tmp
-
-# ─── Project Requirements ───────────────────────────────────
-CBD.md
-NoSQL.md
