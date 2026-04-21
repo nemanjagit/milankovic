@@ -74,7 +74,8 @@ Scans for threats every 6 hours by calling Threat Tracker via Feign. For each th
 ### Start
 
 ```bash
-docker-compose up
+cp .env.example .env
+docker compose up
 ```
 
 Once running, open **http://localhost** in your browser.
@@ -86,19 +87,50 @@ All services start automatically. On first boot, seeding runs in the background:
 
 > **First boot note:** The missions and threat screens will appear empty until Neo4j finishes seeding. This is normal - grab a coffee.
 
+> **Initial seed note:** The Docker images contain the applications, not pre-seeded databases. PostgreSQL and Neo4j data are created in Docker volumes on first start, then the services populate them automatically.
+
 ### Stop (data persists)
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
-Data lives in named Docker volumes and survives restarts. Only `docker-compose down -v` wipes everything.
+Data lives in named Docker volumes and survives restarts. Only `docker compose down -v` wipes everything.
 
 ### Rebuild after code changes
 
 ```bash
-docker-compose up --build
+docker compose -f docker-compose.local.yml up --build
 ```
+
+### Run Using Prebuilt Images
+
+`docker-compose.yml` is the submission/runtime compose file and uses the published Docker Hub images:
+
+```bash
+cp .env.example .env
+docker compose up
+```
+
+Set `DOCKERHUB_USERNAME` and `IMAGE_TAG` in `.env` before running. This compose file skips `config-server` and pulls the already-published application images from Docker Hub instead of building them locally.
+
+For local development builds from source, use:
+
+```bash
+docker compose -f docker-compose.local.yml up --build
+```
+
+### Docker Hub Image Links
+
+Once published, the image pages will be available at:
+
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-naming-server`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-auth-service`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-celestial-body-service`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-threat-tracker-service`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-alert-service`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-api-gateway`
+- `https://hub.docker.com/r/nemanjaadocker/milankovic-frontend`
 
 ---
 
@@ -181,5 +213,6 @@ milankovic/
 ├── alert-service/
 ├── frontend/
 ├── docker-compose.yml
+├── docker-compose.local.yml
 └── pom.xml
 ```

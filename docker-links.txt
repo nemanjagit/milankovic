@@ -1,0 +1,14 @@
+Docker image links:
+https://hub.docker.com/r/nemanjaadocker/milankovic-naming-server
+https://hub.docker.com/r/nemanjaadocker/milankovic-auth-service
+https://hub.docker.com/r/nemanjaadocker/milankovic-celestial-body-service
+https://hub.docker.com/r/nemanjaadocker/milankovic-threat-tracker-service
+https://hub.docker.com/r/nemanjaadocker/milankovic-alert-service
+https://hub.docker.com/r/nemanjaadocker/milankovic-api-gateway
+https://hub.docker.com/r/nemanjaadocker/milankovic-frontend
+
+Docker Compose file:
+docker-compose.yml
+
+Run command:
+docker compose up

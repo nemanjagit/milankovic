@@ -1,6 +1,6 @@
 services:
 
-  # Prebuilt-image deployment. Custom services are pulled from Docker Hub.
+  # ─── Databases (one per service — true microservices pattern) ─
 
   postgres-celestial:
     image: postgres:16-alpine
@@ -68,8 +68,12 @@ services:
       retries: 10
       start_period: 60s
 
+  # ─── Service Discovery ────────────────────────────────────────
+
   naming-server:
-    image: ${DOCKERHUB_USERNAME}/milankovic-naming-server:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: naming-server/Dockerfile
     ports:
       - "8761:8761"
     restart: unless-stopped
@@ -80,8 +84,12 @@ services:
       retries: 5
       start_period: 30s
 
+  # ─── Microservices ────────────────────────────────────────────
+
   auth-service:
-    image: ${DOCKERHUB_USERNAME}/milankovic-auth-service:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/auth_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -96,7 +104,9 @@ services:
         condition: service_healthy
 
   celestial-body-service:
-    image: ${DOCKERHUB_USERNAME}/milankovic-celestial-body-service:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: celestial-body-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-celestial:5432/celestial_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -111,7 +121,9 @@ services:
         condition: service_healthy
 
   threat-tracker-service:
-    image: ${DOCKERHUB_USERNAME}/milankovic-threat-tracker-service:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: threat-tracker-service/Dockerfile
     environment:
       SPRING_NEO4J_URI: bolt://neo4j:7687
       SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
@@ -126,7 +138,9 @@ services:
         condition: service_healthy
 
   alert-service:
-    image: ${DOCKERHUB_USERNAME}/milankovic-alert-service:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: alert-service/Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-alert:5432/alert_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -141,7 +155,9 @@ services:
         condition: service_healthy
 
   api-gateway:
-    image: ${DOCKERHUB_USERNAME}/milankovic-api-gateway:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
     ports:
       - "8080:8080"
     environment:
@@ -160,8 +176,12 @@ services:
       auth-service:
         condition: service_started
 
+  # ─── Frontend ─────────────────────────────────────────────────
+
   frontend:
-    image: ${DOCKERHUB_USERNAME}/milankovic-frontend:${IMAGE_TAG}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     restart: unless-stopped
